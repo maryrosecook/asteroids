@@ -6,6 +6,7 @@
     var screen = canvas.getContext('2d');
     canvas.width = this.size.x;
     canvas.height = this.size.y;
+    screen.strokeStyle = "white";
 
     this.entities = [
       new Asteroid(this, 30, 10),
@@ -93,7 +94,6 @@
   };
 
   var drawShape = function(screen, points) {
-    screen.strokeStyle = "white";
     screen.beginPath();
     var lines = pointsToLines(points);
     for (var i = 0; i < lines.length; i++) {
