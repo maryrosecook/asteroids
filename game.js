@@ -53,7 +53,7 @@
 
   Asteroid.prototype = {
     update: function() {
-      // this.points = rotateShape(this.center, this.points, 0.1);
+      this.points = rotateShape(this.center, this.points, 0.1);
     },
 
     draw: function(screen) {
@@ -122,17 +122,17 @@
     };
   };
 
-  var angleToVector = function(angleRad) {
-    var x = Math.cos(angleRad) * 0 - Math.sin(angleRad) * -1;
-    var y = Math.sin(angleRad) * 0 + Math.cos(angleRad) * -1;
+  var angleToVector = function(angle) {
+    var x = Math.cos(angle) * 0 - Math.sin(angle) * -1;
+    var y = Math.sin(angle) * 0 + Math.cos(angle) * -1;
     return normalise({ x: x, y: y });
   };
 
-  var rotateShape = function(center, points, angleRad) {
+  var rotateShape = function(center, points, angle) {
     return points.map(function(x) { return rotatePoint(center, x, angle); });
   };
 
-  var rotatePoint = function(pivot, point, angleRad) {
+  var rotatePoint = function(pivot, point, angle) {
     var newPoint = { x: point.x, y: point.y };
     newPoint.x -= pivot.x;
     newPoint.y -= pivot.y;
