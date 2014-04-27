@@ -54,7 +54,9 @@
 
   Asteroid.prototype = {
     update: function() {
-      this.points = rotateShape(this.center, this.points, 0.1);
+      var self = this;
+      this.points = this.points
+        .map(function(p) { return rotate(p, self.center, 0.1); });
     },
 
     draw: function(screen) {
@@ -128,9 +130,6 @@
     return normalise({ x: x, y: y });
   };
 
-  var rotateShape = function(center, points, angle) {
-    return points.map(function(x) { return rotatePoint(center, x, angle); });
-  };
 
   var rotatePoint = function(pivot, point, angle) {
     var newPoint = { x: point.x, y: point.y };
