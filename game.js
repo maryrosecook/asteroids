@@ -73,6 +73,7 @@
 
   var Player = function(game) {
     this.game = game;
+    this.velocity = { x: 0, y: 0 };
     this.center = { x: game.size.x / 2, y: game.size.y / 2 };
     this.angle = 0;
     this.points = [
@@ -91,6 +92,18 @@
       } else if (this.keyboarder.isDown(this.keyboarder.RIGHT)) {
         this.turn(0.1);
       }
+
+      // moving
+      this.jet();
+      if (this.keyboarder.isDown(this.keyboarder.UP)) {
+        this.velocity = translate(this.velocity,
+                                  rotate({ x: 0, y: -0.2 }, { x: 0, y: 0 }, this.angle));
+      }
+    jet: function() {
+      var self = this;
+      this.center = translate(this.center, this.velocity);
+      this.points = this.points.map(function(x) { return translate(x, self.velocity); });
+    },
 
     turn: function(angleDelta) {
       var self = this;
