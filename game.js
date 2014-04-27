@@ -90,6 +90,27 @@
     }
   };
 
+  var Keyboarder = function() {
+    var keyState = {};
+
+    window.onkeydown = function(e) {
+      keyState[e.keyCode] = true;
+    };
+
+    window.onkeyup = function(e) {
+      keyState[e.keyCode] = false;
+    };
+
+    this.isDown = function(keyCode) {
+      return keyState[keyCode] === true;
+    };
+
+    this.LEFT = 37;
+    this.RIGHT = 39;
+    this.UP = 38;
+    this.SPACE = 32;
+  };
+
   var pointsToLines = function(points) {
     var lines = [];
     var previous = points[0];
