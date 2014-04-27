@@ -130,16 +130,15 @@
     return normalise({ x: x, y: y });
   };
 
-
-  var rotatePoint = function(pivot, point, angle) {
-    var newPoint = { x: point.x, y: point.y };
-    newPoint.x -= pivot.x;
-    newPoint.y -= pivot.y;
-    newPoint.x = newPoint.x * Math.cos(angle) - newPoint.y * Math.sin(angle);
-    newPoint.y = newPoint.x * Math.sin(angle) + newPoint.y * Math.cos(angle);
-    newPoint.x += pivot.x;
-    newPoint.y += pivot.y;
-    return newPoint;
+  var rotate = function(point, pivot, angle) {
+    return {
+      x: (point.x - pivot.x) * Math.cos(angle) -
+         (point.y - pivot.y) * Math.sin(angle) +
+         pivot.x,
+      y: (point.x - pivot.x) * Math.sin(angle) +
+         (point.y - pivot.y) * Math.cos(angle) +
+         pivot.y
+    };
   };
 
   window.onload = function() {
