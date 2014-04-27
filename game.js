@@ -77,10 +77,11 @@
     this.center = { x: game.size.x / 2, y: game.size.y / 2 };
     this.angle = 0;
     this.points = [
-      { x: this.center.x - 10, y: this.center.y + 10 },
+      { x: this.center.x - 8, y: this.center.y + 9 },
       { x: this.center.x,      y: this.center.y - 10 },
-      { x: this.center.x + 10, y: this.center.y + 10 }
+      { x: this.center.x + 8, y: this.center.y + 9 }
     ];
+
     this.keyboarder = new Keyboarder();
   };
 
