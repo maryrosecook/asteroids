@@ -67,7 +67,7 @@
     },
 
     draw: function(screen) {
-      drawShape(screen, this.points);
+      pointsToLines(this.points).map(function(x) { drawLine(screen, x); });
     }
   };
 
@@ -86,7 +86,7 @@
     },
 
     draw: function(screen) {
-      drawShape(screen, this.points);
+      pointsToLines(this.points).map(function(x) { drawLine(screen, x); });
     }
   };
 
@@ -102,14 +102,10 @@
     return lines;
   };
 
-  var drawShape = function(screen, points) {
+  var drawLine = function(screen, line) {
     screen.beginPath();
-    var lines = pointsToLines(points);
-    for (var i = 0; i < lines.length; i++) {
-      screen.moveTo(lines[i][0].x, lines[i][0].y);
-      screen.lineTo(lines[i][1].x, lines[i][1].y);
-    }
-
+    screen.moveTo(line[0].x, line[0].y);
+    screen.lineTo(line[1].x, line[1].y);
     screen.stroke();
   };
 
