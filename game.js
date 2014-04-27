@@ -72,17 +72,32 @@
   };
 
   var Player = function(game) {
+    this.game = game;
     this.center = { x: game.size.x / 2, y: game.size.y / 2 };
+    this.angle = 0;
     this.points = [
       { x: this.center.x - 10, y: this.center.y + 10 },
       { x: this.center.x,      y: this.center.y - 10 },
       { x: this.center.x + 10, y: this.center.y + 10 }
     ];
+    this.keyboarder = new Keyboarder();
   };
 
   Player.prototype = {
     update: function() {
+      // turning
+      if (this.keyboarder.isDown(this.keyboarder.LEFT)) {
+        this.turn(-0.1);
+      } else if (this.keyboarder.isDown(this.keyboarder.RIGHT)) {
+        this.turn(0.1);
+      }
 
+    turn: function(angleDelta) {
+      var self = this;
+      this.angle += angleDelta;
+      this.points = this.points.map(function(x) {
+        return rotate(x, self.center, angleDelta);
+      });
     },
 
     draw: function(screen) {
