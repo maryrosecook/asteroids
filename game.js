@@ -48,6 +48,7 @@
       x: game.size.x * Math.random(),
       y: game.size.y * Math.random()
     };
+    this.velocity = { x: 0.05, y: 0.05 };
 
     this.points = [];
     for (var a = 0; a < 2 * Math.PI; a += 2 * Math.PI / pointCount) {
@@ -58,8 +59,11 @@
   Asteroid.prototype = {
     update: function(timeDelta) {
       var self = this;
+      var deltaVelocity = { x: this.velocity.x * timeDelta, y: this.velocity.y * timeDelta };
+      this.center = translate(this.center, deltaVelocity);
       this.points = this.points
-        .map(function(p) { return rotate(p, self.center, 0.1); });
+        .map(function(p) { return rotate(p, self.center, 0.001 * timeDelta); })
+        .map(function(p) { return translate(p, deltaVelocity); });
     },
 
     draw: function(screen) {
@@ -107,6 +111,10 @@
     }
 
     screen.stroke();
+  };
+
+  var translate = function(point, translation) {
+    return { x: point.x + translation.x, y: point.y + translation.y };
   };
 
   var randomPointInCircle = function(center, angle, radius) {
