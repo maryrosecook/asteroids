@@ -14,19 +14,22 @@
     ];
 
     var self = this;
+    var lastTick = new Date().getTime();
     var tick = function() {
-      self.update();
+      var now = new Date().getTime();
+      self.update(now - lastTick);
       self.draw(screen);
       requestAnimationFrame(tick);
+      lastTick = now;
     };
 
     tick();
   };
 
   Game.prototype = {
-    update: function() {
+    update: function(timeDelta) {
       for (var i = 0; i < this.entities.length; i++) {
-        this.entities[i].update();
+        this.entities[i].update(timeDelta);
       }
     },
 
@@ -53,7 +56,7 @@
   };
 
   Asteroid.prototype = {
-    update: function() {
+    update: function(timeDelta) {
       var self = this;
       this.points = this.points
         .map(function(p) { return rotate(p, self.center, 0.1); });
