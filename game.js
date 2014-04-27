@@ -114,21 +114,10 @@
   };
 
   var randomPointInCircle = function(center, angle, radius) {
-    return {
-      x: center.x + angleToVector(angle).x * radius * (0.2 + Math.random()),
-      y: center.y + angleToVector(angle).y * radius * (0.2 + Math.random())
-    };
-  };
-
-  var normalise = function(vector) {
-    var magnitude = Math.sqrt(vector.x * vector.x + vector.y * vector.y);
-    return { x: vector.x / magnitude, y: vector.y / magnitude };
-  };
-
-  var angleToVector = function(angle) {
-    var x = Math.cos(angle) * 0 - Math.sin(angle) * -1;
-    var y = Math.sin(angle) * 0 + Math.cos(angle) * -1;
-    return normalise({ x: x, y: y });
+    return rotate({
+      x: center.x + radius * (0.1 + Math.random()),
+      y: center.y - radius * (0.1 + Math.random())
+    }, center, angle);
   };
 
   var rotate = function(point, pivot, angle) {
