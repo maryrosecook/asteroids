@@ -120,15 +120,9 @@
     };
   };
 
-  var magnitude = function(vector) {
-    return Math.sqrt(vector.x * vector.x + vector.y * vector.y);
-  };
-
   var normalise = function(vector) {
-    return {
-      x: vector.x / magnitude(vector),
-      y: vector.y / magnitude(vector)
-    };
+    var magnitude = Math.sqrt(vector.x * vector.x + vector.y * vector.y);
+    return { x: vector.x / magnitude, y: vector.y / magnitude };
   };
 
   var angleToVector = function(angle) {
