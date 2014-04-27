@@ -40,6 +40,10 @@
       for (var i = 0; i < this.entities.length; i++) {
         this.entities[i].draw(screen);
       }
+    },
+
+    shoot: function(center, velocity) {
+      this.entities.push(new Bullet(this, center, velocity));
     }
   };
 
@@ -83,6 +87,7 @@
     ];
 
     this.keyboarder = new Keyboarder();
+    this.lastShotTime = 0;
   };
 
   Player.prototype = {
@@ -100,6 +105,17 @@
         this.velocity = translate(this.velocity,
                                   rotate({ x: 0, y: -0.2 }, { x: 0, y: 0 }, this.angle));
       }
+
+      // shooting
+      var now = new Date().getTime();
+      if (this.keyboarder.isDown(this.keyboarder.SPACE) &&
+          now - this.lastShotTime > 500) {
+        this.lastShotTime = now;
+        var point = rotate(translate(this.center, { x: 0, y: -9 }), this.center, this.angle);
+        this.game.shoot(point, rotate({ x: 0, y: -0.2 }, { x: 0, y: 0 }, this.angle));
+      }
+    },
+
     jet: function() {
       var self = this;
       this.center = translate(this.center, this.velocity);
@@ -116,6 +132,23 @@
 
     draw: function(screen) {
       pointsToLines(this.points).map(function(x) { drawLine(screen, x); });
+    }
+  };
+
+  var Bullet = function(game, center, velocity) {
+    this.center = center;
+    this.velocity = velocity;
+  };
+
+  Bullet.prototype = {
+    update: function(timeDelta) {
+      var deltaVelocity = { x: this.velocity.x * timeDelta, y: this.velocity.y * timeDelta };
+      this.center = translate(this.center, deltaVelocity);
+    },
+
+    draw: function(screen) {
+      screen.fillStyle = "white";
+      screen.fillRect(this.center.x - 1, this.center.y - 1, 2, 2);
     }
   };
 
