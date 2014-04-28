@@ -151,7 +151,7 @@
 
     update: function() {},
     draw: function(screen) {
-      pointsToLines(this.points).map(function(x) { drawLine(screen, x); });
+      pointsToLines(this.points).forEach(function(x) { drawLine(screen, x); });
     }
   };
 
