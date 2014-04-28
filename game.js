@@ -196,9 +196,10 @@
   };
 
   var randomPointInCircle = function(center, angle, radius) {
+    var random = Math.random();
     return rotate({
-      x: center.x + radius * (0.1 + Math.random()),
-      y: center.y - radius * (0.1 + Math.random())
+      x: center.x + radius * (0.1 + random),
+      y: center.y - radius * (0.1 + random)
     }, center, angle);
   };
 
