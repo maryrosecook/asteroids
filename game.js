@@ -233,6 +233,8 @@
     return pairs;
   };
 
+  // a = [{x: 4, y: 6}, {x: 4, y: 6}]
+  // b = [{x: 4, y: 6}, {x: 4, y: 6}]
   var linesIntersecting = function(a, b) {
     var d = (b[1].y - b[0].y) * (a[1].x - a[0].x) -
             (b[1].x - b[0].x) * (a[1].y - a[0].y);
