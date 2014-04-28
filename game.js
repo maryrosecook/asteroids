@@ -33,18 +33,12 @@
       }
 
       for (var i = 0; i < this.entities.length; i++) {
-        if (this.entities[i] instanceof Bullet) {
-          var bulletLine = pointsToLines(this.entities[i].points)[0];
-          for (var j = 0; j < this.entities.length; j++) {
-            if (this.entities[j] instanceof Asteroid) {
-              var asteroidLines = pointsToLines(this.entities[j].points);
-              for (var k = 0; k < asteroidLines.length; k++) {
-                if (linesIntersecting(asteroidLines[k], bulletLine)) {
-                  this.destroy(this.entities[i]);
-                  this.destroy(this.entities[j]);
-                }
-              }
-            }
+        for (var j = i + 1; j < this.entities.length; j++) {
+          var p = pairs(pointsToLines(this.entities[i].points),
+                        pointsToLines(this.entities[j].points));
+          if (p.filter(function(x) { return linesIntersecting(x[0], x[1]); }).length > 0) {
+            this.destroy(this.entities[i]);
+            this.destroy(this.entities[j]);
           }
         }
       }
@@ -227,6 +221,16 @@
          (point.y - pivot.y) * Math.cos(angle) +
          pivot.y
     };
+  };
+
+  var pairs = function(a, b) {
+    var pairs = [];
+    for (var i = 0; i < a.length; i++) {
+      for (var j = 0; j < b.length; j++) {
+        pairs.push([a[i], b[j]]);
+      }
+    }
+    return pairs;
   };
 
   var linesIntersecting = function(a, b) {
