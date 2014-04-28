@@ -2,7 +2,6 @@
   var Game = function(canvasId) {
     var canvas = document.getElementById(canvasId);
     var screen = canvas.getContext('2d');
-    screen.strokeStyle = "white";
     this.size = { x: canvas.width, y: canvas.height };
 
     this.entities = [createAsteroid(this), createAsteroid(this), createAsteroid(this),
@@ -39,9 +38,7 @@
     },
 
     draw: function(screen) {
-      screen.fillStyle = "black";
-      screen.fillRect(0, 0, this.size.x, this.size.y);
-
+      screen.clearRect(0, 0, this.size.x, this.size.y);
       for (var i = 0; i < this.entities.length; i++) {
         this.entities[i].draw(screen);
       }
