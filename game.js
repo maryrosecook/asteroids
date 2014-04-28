@@ -33,6 +33,23 @@
       for (var i = 0; i < this.entities.length; i++) {
         this.entities[i].update(timeDelta);
       }
+
+      for (var i = 0; i < this.entities.length; i++) {
+        if (this.entities[i] instanceof Bullet) {
+          var bulletLine = pointsToLines(this.entities[i].points)[0];
+          for (var j = 0; j < this.entities.length; j++) {
+            if (this.entities[j] instanceof Asteroid) {
+              var asteroidLines = pointsToLines(this.entities[j].points);
+              for (var k = 0; k < asteroidLines.length; k++) {
+                if (linesIntersecting(asteroidLines[k], bulletLine)) {
+                  this.destroy(this.entities[i]);
+                  this.destroy(this.entities[j]);
+                }
+              }
+            }
+          }
+        }
+      }
     },
 
     draw: function(screen) {
@@ -46,6 +63,10 @@
 
     shoot: function(center, angle) {
       this.entities.push(new Bullet(this, center, angle));
+    },
+
+    destroy: function(entity) {
+      this.entities.splice(this.entities.indexOf(entity), 1);
     }
   };
 
@@ -214,6 +235,18 @@
          (point.y - pivot.y) * Math.cos(angle) +
          pivot.y
     };
+  };
+
+  var linesIntersecting = function(a, b) {
+    var d = (b[1].y - b[0].y) * (a[1].x - a[0].x) -
+            (b[1].x - b[0].x) * (a[1].y - a[0].y);
+    var n1 = (b[1].x - b[0].x) * (a[0].y - b[0].y) -
+             (b[1].y - b[0].y) * (a[0].x - b[0].x);
+    var n2 = (a[1].x - a[0].x) * (a[0].y - b[0].y) -
+             (a[1].y - a[0].y) * (a[0].x - b[0].x);
+
+    if (d === 0.0) return false;
+    return n1 / d >= 0 && n1 / d <= 1 && n2 / d >= 0 && n2 / d <= 1;
   };
 
   window.onload = function() {
