@@ -9,10 +9,8 @@
     screen.strokeStyle = "white";
 
     this.entities = [
-      new Asteroid(this, 30, 10),
-      new Asteroid(this, 30, 10),
-      new Asteroid(this, 30, 10),
-      new Player(this)
+      createAsteroid(this),
+      createPlayer(this)
     ];
 
     var self = this;
@@ -62,59 +60,44 @@
     },
 
     shoot: function(center, angle) {
-      this.entities.push(new Bullet(this, center, angle));
+      this.entities.push(createBullet(this, center, angle));
     },
 
     destroy: function(entity) {
-      this.entities.splice(this.entities.indexOf(entity), 1);
-    }
-  };
-
-  var Asteroid = function(game, radius, pointCount) {
-    this.center = {
-      x: game.size.x * Math.random(),
-      y: game.size.y * Math.random()
-    };
-    this.velocity = { x: 0.05, y: 0.05 };
-
-    this.points = [];
-    for (var a = 0; a < 2 * Math.PI; a += 2 * Math.PI / pointCount) {
-      this.points.push(randomPointInCircle(this.center, a, radius));
-    }
-  };
-
-  Asteroid.prototype = {
-    update: function(timeDelta) {
       var self = this;
-      var deltaVelocity = { x: this.velocity.x * timeDelta, y: this.velocity.y * timeDelta };
-      this.center = translate(this.center, deltaVelocity);
-      this.points = this.points
-        .map(function(p) { return rotate(p, self.center, 0.001 * timeDelta); })
-        .map(function(p) { return translate(p, deltaVelocity); });
-    },
-
-    draw: function(screen) {
-      pointsToLines(this.points).map(function(x) { drawLine(screen, x); });
+      setTimeout(function() {
+        self.entities.splice(self.entities.indexOf(entity), 1);
+      }, 0);
     }
   };
 
-  var Player = function(game) {
-    this.game = game;
-    this.velocity = { x: 0, y: 0 };
-    this.center = { x: game.size.x / 2, y: game.size.y / 2 };
-    this.angle = 0;
-    this.points = [
-      { x: this.center.x - 8, y: this.center.y + 9 },
-      { x: this.center.x,      y: this.center.y - 10 },
-      { x: this.center.x + 8, y: this.center.y + 9 }
-    ];
+  var createAsteroid = function(game) {
+    var center = { x: game.size.x * Math.random(), y: game.size.y  * Math.random() };
+    var asteroid = new Body(game,
+                            center,
+                            asteroidPoints(center, 30, 10),
+                            { x: (Math.random() - 0.5) / 10, y: (Math.random() - 0.5) / 10 });
+    asteroid.update = function(timeDelta) {
+      this.move(timeDelta);
+      this.turn(0.01);
+    };
 
-    this.keyboarder = new Keyboarder();
-    this.lastShotTime = 0;
+    return asteroid;
   };
 
-  Player.prototype = {
-    update: function() {
+  var createPlayer = function(game) {
+    var center = { x: game.size.x / 2, y: game.size.y / 2 };
+    var player = new Body(game,
+                          center,
+                          [{ x: center.x - 8, y: center.y + 9 },
+                           { x: center.x,     y: center.y - 10 },
+                           { x: center.x + 8, y: center.y + 9 }],
+                          { x: 0, y: 0 });
+
+    player.keyboarder = new Keyboarder();
+    player.lastShotTime = 0;
+
+    player.update = function(timeDelta) {
       // turning
       if (this.keyboarder.isDown(this.keyboarder.LEFT)) {
         this.turn(-0.1);
@@ -122,11 +105,10 @@
         this.turn(0.1);
       }
 
-      // moving
-      this.jet();
+      // jetting
       if (this.keyboarder.isDown(this.keyboarder.UP)) {
         this.velocity = translate(this.velocity,
-                                  rotate({ x: 0, y: -0.1 }, { x: 0, y: 0 }, this.angle));
+                                  rotate({ x: 0, y: -0.005 }, { x: 0, y: 0 }, this.angle));
       }
 
       // shooting
@@ -137,40 +119,45 @@
         var point = rotate(translate(this.center, { x: 0, y: -9 }), this.center, this.angle);
         this.game.shoot(point, this.angle);
       }
-    },
 
-    jet: function() {
-      var self = this;
-      this.center = translate(this.center, this.velocity);
-      this.points = this.points.map(function(x) { return translate(x, self.velocity); });
+      this.move(timeDelta);
+    };
+
+    return player;
+  };
+
+  var createBullet = function(game, start, angle) {
+    var velocity = rotate({ x: 0, y: -0.2 }, { x: 0, y: 0 }, angle);
+    var points = [start, translate(start, { x: velocity.x * 50, y: velocity.y * 50 })];
+    var bullet = new Body(game, start, points, velocity);
+    bullet.update = bullet.move;
+    return bullet;
+  };
+
+  var Body = function(game, center, points, velocity) {
+    this.game = game;
+    this.center = center;
+    this.points = points;
+    this.velocity = velocity;
+    this.angle = 0;
+  };
+
+  Body.prototype = {
+    move: function(timeDelta) {
+      var deltaVelocity = { x: this.velocity.x * timeDelta, y: this.velocity.y * timeDelta };
+      this.center = translate(this.center, deltaVelocity);
+      this.points = this.points.map(function(x) { return translate(x, deltaVelocity); });
     },
 
     turn: function(angleDelta) {
-      var self = this;
+      var center = this.center;
+      this.points = this.points.map(function(x) { return rotate(x, center, angleDelta); })
       this.angle += angleDelta;
-      this.points = this.points.map(function(x) {
-        return rotate(x, self.center, angleDelta);
-      });
     },
 
+    update: function() {},
     draw: function(screen) {
       pointsToLines(this.points).map(function(x) { drawLine(screen, x); });
-    }
-  };
-
-  var Bullet = function(game, start, angle) {
-    this.velocity = rotate({ x: 0, y: -0.2 }, { x: 0, y: 0 }, angle);
-    this.points = [start, translate(start, { x: this.velocity.x * 50, y: this.velocity.y * 50 })];
-  };
-
-  Bullet.prototype = {
-    update: function(timeDelta) {
-      var deltaVelocity = { x: this.velocity.x * timeDelta, y: this.velocity.y * timeDelta };
-      this.points = this.points.map(function (x) { return translate(x, deltaVelocity) });
-    },
-
-    draw: function(screen) {
-      drawLine(screen, pointsToLines(this.points)[0]);
     }
   };
 
@@ -218,12 +205,17 @@
     return { x: point.x + translation.x, y: point.y + translation.y };
   };
 
-  var randomPointInCircle = function(center, angle, radius) {
-    var random = Math.random();
-    return rotate({
-      x: center.x + radius * (0.1 + random),
-      y: center.y - radius * (0.1 + random)
-    }, center, angle);
+  var asteroidPoints = function(center, radius, pointCount) {
+    var points = [];
+    for (var a = 0; a < 2 * Math.PI; a += 2 * Math.PI / pointCount) {
+      var random = Math.random();
+      points.push(rotate({
+        x: center.x + radius * (0.1 + random),
+        y: center.y - radius * (0.1 + random)
+      }, center, a));
+    }
+
+    return points;
   };
 
   var rotate = function(point, pivot, angle) {
