@@ -10,6 +10,8 @@
 
     this.entities = [
       new Asteroid(this, 30, 10),
+      new Asteroid(this, 30, 10),
+      new Asteroid(this, 30, 10),
       new Player(this)
     ];
 
