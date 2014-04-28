@@ -1,12 +1,9 @@
 ;(function() {
   var Game = function(canvasId) {
-    this.size = { x: 400, y: 400 };
-
     var canvas = document.getElementById(canvasId);
     var screen = canvas.getContext('2d');
-    canvas.width = this.size.x;
-    canvas.height = this.size.y;
     screen.strokeStyle = "white";
+    this.size = { x: canvas.width, y: canvas.height };
 
     this.entities = [createAsteroid(this), createAsteroid(this), createAsteroid(this),
                      createPlayer(this)];
