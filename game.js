@@ -42,8 +42,8 @@
       }
     },
 
-    shoot: function(center, velocity) {
-      this.entities.push(new Bullet(this, center, velocity));
+    shoot: function(center, angle) {
+      this.entities.push(new Bullet(this, center, angle));
     }
   };
 
@@ -103,7 +103,7 @@
       this.jet();
       if (this.keyboarder.isDown(this.keyboarder.UP)) {
         this.velocity = translate(this.velocity,
-                                  rotate({ x: 0, y: -0.2 }, { x: 0, y: 0 }, this.angle));
+                                  rotate({ x: 0, y: -0.1 }, { x: 0, y: 0 }, this.angle));
       }
 
       // shooting
@@ -112,7 +112,7 @@
           now - this.lastShotTime > 500) {
         this.lastShotTime = now;
         var point = rotate(translate(this.center, { x: 0, y: -9 }), this.center, this.angle);
-        this.game.shoot(point, rotate({ x: 0, y: -0.2 }, { x: 0, y: 0 }, this.angle));
+        this.game.shoot(point, this.angle);
       }
     },
 
@@ -135,20 +135,19 @@
     }
   };
 
-  var Bullet = function(game, center, velocity) {
-    this.center = center;
-    this.velocity = velocity;
+  var Bullet = function(game, start, angle) {
+    this.velocity = rotate({ x: 0, y: -0.2 }, { x: 0, y: 0 }, angle);
+    this.points = [start, translate(start, { x: this.velocity.x * 50, y: this.velocity.y * 50 })];
   };
 
   Bullet.prototype = {
     update: function(timeDelta) {
       var deltaVelocity = { x: this.velocity.x * timeDelta, y: this.velocity.y * timeDelta };
-      this.center = translate(this.center, deltaVelocity);
+      this.points = this.points.map(function (x) { return translate(x, deltaVelocity) });
     },
 
     draw: function(screen) {
-      screen.fillStyle = "white";
-      screen.fillRect(this.center.x - 1, this.center.y - 1, 2, 2);
+      drawLine(screen, pointsToLines(this.points)[0]);
     }
   };
 
