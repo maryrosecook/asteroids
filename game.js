@@ -8,10 +8,8 @@
     canvas.height = this.size.y;
     screen.strokeStyle = "white";
 
-    this.entities = [
-      createAsteroid(this),
-      createPlayer(this)
-    ];
+    this.entities = [createAsteroid(this), createAsteroid(this), createAsteroid(this),
+                     createPlayer(this)];
 
     var self = this;
     var tick = function() {
