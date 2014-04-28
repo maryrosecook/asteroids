@@ -14,10 +14,9 @@
     ];
 
     var self = this;
-    var lastTick = new Date().getTime();
     var tick = function() {
       var now = new Date().getTime();
-      self.update(now - lastTick);
+      self.update();
       self.draw(screen);
       requestAnimationFrame(tick);
       lastTick = now;
@@ -27,9 +26,9 @@
   };
 
   Game.prototype = {
-    update: function(timeDelta) {
+    update: function() {
       for (var i = 0; i < this.entities.length; i++) {
-        this.entities[i].update(timeDelta);
+        this.entities[i].update();
       }
 
       for (var i = 0; i < this.entities.length; i++) {
@@ -70,9 +69,9 @@
     var asteroid = new Body(game,
                             center,
                             asteroidPoints(center, 30, 10),
-                            { x: (Math.random() - 0.5) / 10, y: (Math.random() - 0.5) / 10 });
-    asteroid.update = function(timeDelta) {
-      this.move(timeDelta);
+                            { x: (Math.random() - 0.5) / 2, y: (Math.random() - 0.5) / 2 });
+    asteroid.update = function() {
+      this.move();
       this.turn(0.01);
     };
 
@@ -91,7 +90,7 @@
     player.keyboarder = new Keyboarder();
     player.lastShotTime = 0;
 
-    player.update = function(timeDelta) {
+    player.update = function() {
       // turning
       if (this.keyboarder.isDown(this.keyboarder.LEFT)) {
         this.turn(-0.1);
@@ -102,7 +101,7 @@
       // jetting
       if (this.keyboarder.isDown(this.keyboarder.UP)) {
         this.velocity = translate(this.velocity,
-                                  rotate({ x: 0, y: -0.005 }, { x: 0, y: 0 }, this.angle));
+                                  rotate({ x: 0, y: -0.05 }, { x: 0, y: 0 }, this.angle));
       }
 
       // shooting
@@ -114,15 +113,15 @@
         this.game.shoot(point, this.angle);
       }
 
-      this.move(timeDelta);
+      this.move();
     };
 
     return player;
   };
 
   var createBullet = function(game, start, angle) {
-    var velocity = rotate({ x: 0, y: -0.2 }, { x: 0, y: 0 }, angle);
-    var points = [start, translate(start, { x: velocity.x * 50, y: velocity.y * 50 })];
+    var velocity = rotate({ x: 0, y: -5 }, { x: 0, y: 0 }, angle);
+    var points = [start, translate(start, { x: velocity.x, y: velocity.y })];
     var bullet = new Body(game, start, points, velocity);
     bullet.update = bullet.move;
     return bullet;
@@ -137,10 +136,10 @@
   };
 
   Body.prototype = {
-    move: function(timeDelta) {
-      var deltaVelocity = { x: this.velocity.x * timeDelta, y: this.velocity.y * timeDelta };
-      this.center = translate(this.center, deltaVelocity);
-      this.points = this.points.map(function(x) { return translate(x, deltaVelocity); });
+    move: function() {
+      var self = this;
+      this.center = translate(this.center, this.velocity);
+      this.points = this.points.map(function(x) { return translate(x, self.velocity); });
     },
 
     turn: function(angleDelta) {
