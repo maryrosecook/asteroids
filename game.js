@@ -8,15 +8,18 @@
                      createPlayer(this)];
 
     var self = this;
-    var tick = function() {
-      var now = new Date().getTime();
-      self.update();
-      self.draw(screen);
-      requestAnimationFrame(tick);
-      lastTick = now;
-    };
+    loadSound("/shoot.wav", function(shootSound) {
+      self.shootSound = shootSound;
+      var tick = function() {
+        var now = new Date().getTime();
+        self.update();
+        self.draw(screen);
+        requestAnimationFrame(tick);
+        lastTick = now;
+      };
 
-    tick();
+      tick();
+    });
   };
 
   Game.prototype = {
@@ -45,6 +48,8 @@
     },
 
     shoot: function(center, angle) {
+      this.shootSound.load();
+      this.shootSound.play();
       this.entities.push(createBullet(this, center, angle));
     },
 
@@ -222,6 +227,17 @@
       }
     }
     return pairs;
+  };
+
+  var loadSound = function(url, callback) {
+    var sound = new Audio(url);
+    var loaded = function() {
+      callback(sound);
+      sound.removeEventListener('canplaythrough', loaded);
+    };
+
+    sound.addEventListener('canplaythrough', loaded);
+    sound.load();
   };
 
   // a = [{x: 4, y: 6}, {x: 4, y: 6}]
