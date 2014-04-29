@@ -4,7 +4,9 @@
     var screen = canvas.getContext('2d');
     var size = { x: canvas.width, y: canvas.height };
 
-    this.entities = [createAsteroid(size), createAsteroid(size), createAsteroid(size),
+    this.entities = [createAsteroid(size, { x: 75, y: 75 }),
+                     createAsteroid(size, { x: 225, y: 75 }),
+                     createAsteroid(size, { x: 150, y: 225 }),
                      createPlayer(this, size)];
 
     var self = this;
@@ -54,8 +56,7 @@
     }
   };
 
-  var createAsteroid = function(size) {
-    var center = { x: size.x * Math.random(), y: size.y * Math.random() };
+  var createAsteroid = function(size, center) {
     return {
       angle: 0,
       center: center,
