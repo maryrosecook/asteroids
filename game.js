@@ -93,21 +93,21 @@
 
       update: function() {
         // turning
-        if (this.keyboarder.isDown(this.keyboarder.LEFT)) {
+        if (this.keyboarder.isDown(this.keyboarder.KEYS.LEFT)) {
           this.turn(-0.1);
-        } else if (this.keyboarder.isDown(this.keyboarder.RIGHT)) {
+        } else if (this.keyboarder.isDown(this.keyboarder.KEYS.RIGHT)) {
           this.turn(0.1);
         }
 
         // jetting
-        if (this.keyboarder.isDown(this.keyboarder.UP)) {
+        if (this.keyboarder.isDown(this.keyboarder.KEYS.UP)) {
           this.velocity = trig.translate(this.velocity,
                                     trig.rotate({ x: 0, y: -0.05 }, { x: 0, y: 0 }, this.angle));
         }
 
         // shooting
         var now = new Date().getTime();
-        if (this.keyboarder.isDown(this.keyboarder.SPACE) &&
+        if (this.keyboarder.isDown(this.keyboarder.KEYS.SPACE) &&
             now - this.lastShotTime > 500) {
           this.lastShotTime = now;
           game.shoot({ x: this.points[1].x, y: this.points[1].y }, this.angle);
@@ -154,10 +154,7 @@
       return keyState[keyCode] === true;
     };
 
-    this.LEFT = 37;
-    this.RIGHT = 39;
-    this.UP = 38;
-    this.SPACE = 32;
+    this.KEYS = { LEFT: 37, RIGHT: 39, UP: 38, SPACE: 32 };
   };
 
   var pointsToLines = function(points) {
