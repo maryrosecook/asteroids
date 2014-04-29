@@ -67,7 +67,10 @@
   };
 
   var draw = function(screen) {
-    pointsToLines(this.points).forEach(function(x) { drawLine(screen, x); });
+    var lines = pointsToLines(this.points);
+    for (var i = 0; i < lines.length; i++) {
+      drawLine(screen, lines[i]);
+    }
   };
 
   var move = function() {
