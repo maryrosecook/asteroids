@@ -92,20 +92,17 @@
       lastShotTime: 0,
 
       update: function() {
-        // turning
         if (this.keyboarder.isDown(this.keyboarder.KEYS.LEFT)) {
           this.turn(-0.1);
         } else if (this.keyboarder.isDown(this.keyboarder.KEYS.RIGHT)) {
           this.turn(0.1);
         }
 
-        // jetting
         if (this.keyboarder.isDown(this.keyboarder.KEYS.UP)) {
           this.velocity = trig.translate(this.velocity,
                                     trig.rotate({ x: 0, y: -0.05 }, { x: 0, y: 0 }, this.angle));
         }
 
-        // shooting
         var now = new Date().getTime();
         if (this.keyboarder.isDown(this.keyboarder.KEYS.SPACE) &&
             now - this.lastShotTime > 500) {
