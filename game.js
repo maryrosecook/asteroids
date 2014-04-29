@@ -32,7 +32,7 @@
         for (var j = i + 1; j < this.entities.length; j++) {
           var p = pairs(pointsToLines(this.entities[i].points),
                         pointsToLines(this.entities[j].points));
-          if (p.filter(function(x) { return linesIntersecting(x[0], x[1]); }).length > 0) {
+          if (p.filter(function(x) { return trig.linesIntersecting(x[0], x[1]); }).length > 0) {
             this.destroy(this.entities[i]);
             this.destroy(this.entities[j]);
           }
@@ -79,8 +79,8 @@
 
   var move = function() {
     var self = this;
-    this.center = translate(this.center, this.velocity);
-    this.points = this.points.map(function(x) { return translate(x, self.velocity); });
+    this.center = trig.translate(this.center, this.velocity);
+    this.points = this.points.map(function(x) { return trig.translate(x, self.velocity); });
   };
 
   var createPlayer = function(game, size) {
@@ -105,8 +105,8 @@
 
         // jetting
         if (this.keyboarder.isDown(this.keyboarder.UP)) {
-          this.velocity = translate(this.velocity,
-                                    rotate({ x: 0, y: -0.05 }, { x: 0, y: 0 }, this.angle));
+          this.velocity = trig.translate(this.velocity,
+                                    trig.rotate({ x: 0, y: -0.05 }, { x: 0, y: 0 }, this.angle));
         }
 
         // shooting
@@ -122,7 +122,7 @@
 
       turn: function(angleDelta) {
         var center = this.center;
-        this.points = this.points.map(function(x) { return rotate(x, center, angleDelta); })
+        this.points = this.points.map(function(x) { return trig.rotate(x, center, angleDelta); })
         this.angle += angleDelta;
       },
 
@@ -132,11 +132,11 @@
   };
 
   var createBullet = function(game, start, angle) {
-    var velocity = rotate({ x: 0, y: -5 }, { x: 0, y: 0 }, angle);
+    var velocity = trig.rotate({ x: 0, y: -5 }, { x: 0, y: 0 }, angle);
     return {
       angle: 0,
       center: start,
-      points: [start, translate(start, { x: velocity.x, y: velocity.y })],
+      points: [start, trig.translate(start, { x: velocity.x, y: velocity.y })],
       velocity: velocity,
       update: move,
       draw: draw
@@ -183,32 +183,17 @@
     screen.stroke();
   };
 
-  var translate = function(point, translation) {
-    return { x: point.x + translation.x, y: point.y + translation.y };
-  };
-
   var asteroidPoints = function(center, radius, pointCount) {
     var points = [];
     for (var a = 0; a < 2 * Math.PI; a += 2 * Math.PI / pointCount) {
       var random = Math.random();
-      points.push(rotate({
+      points.push(trig.rotate({
         x: center.x + radius * (0.1 + random),
         y: center.y - radius * (0.1 + random)
       }, center, a));
     }
 
     return points;
-  };
-
-  var rotate = function(point, pivot, angle) {
-    return {
-      x: (point.x - pivot.x) * Math.cos(angle) -
-         (point.y - pivot.y) * Math.sin(angle) +
-         pivot.x,
-      y: (point.x - pivot.x) * Math.sin(angle) +
-         (point.y - pivot.y) * Math.cos(angle) +
-         pivot.y
-    };
   };
 
   var pairs = function(a, b) {
@@ -232,21 +217,36 @@
     sound.load();
   };
 
-  // a = [{x: 4, y: 6}, {x: 4, y: 6}]
-  // b = [{x: 4, y: 6}, {x: 4, y: 6}]
-  var linesIntersecting = function(a, b) {
-    var d = (b[1].y - b[0].y) * (a[1].x - a[0].x) -
-            (b[1].x - b[0].x) * (a[1].y - a[0].y);
-    var n1 = (b[1].x - b[0].x) * (a[0].y - b[0].y) -
-             (b[1].y - b[0].y) * (a[0].x - b[0].x);
-    var n2 = (a[1].x - a[0].x) * (a[0].y - b[0].y) -
-             (a[1].y - a[0].y) * (a[0].x - b[0].x);
-
-    if (d === 0.0) return false;
-    return n1 / d >= 0 && n1 / d <= 1 && n2 / d >= 0 && n2 / d <= 1;
-  };
-
   window.onload = function() {
     new Game("screen");
+  };
+
+  var trig = {
+    translate: function(point, translation) {
+      return { x: point.x + translation.x, y: point.y + translation.y };
+    },
+
+    rotate: function(point, pivot, angle) {
+      return {
+        x: (point.x - pivot.x) * Math.cos(angle) -
+          (point.y - pivot.y) * Math.sin(angle) +
+          pivot.x,
+        y: (point.x - pivot.x) * Math.sin(angle) +
+          (point.y - pivot.y) * Math.cos(angle) +
+          pivot.y
+      };
+    },
+
+    linesIntersecting: function(a, b) {
+      var d = (b[1].y - b[0].y) * (a[1].x - a[0].x) -
+          (b[1].x - b[0].x) * (a[1].y - a[0].y);
+      var n1 = (b[1].x - b[0].x) * (a[0].y - b[0].y) -
+          (b[1].y - b[0].y) * (a[0].x - b[0].x);
+      var n2 = (a[1].x - a[0].x) * (a[0].y - b[0].y) -
+          (a[1].y - a[0].y) * (a[0].x - b[0].x);
+
+      if (d === 0.0) return false;
+      return n1 / d >= 0 && n1 / d <= 1 && n2 / d >= 0 && n2 / d <= 1;
+    }
   };
 })(this);
