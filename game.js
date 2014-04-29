@@ -11,11 +11,9 @@
     loadSound("/shoot.wav", function(shootSound) {
       self.shootSound = shootSound;
       var tick = function() {
-        var now = new Date().getTime();
         self.update();
         self.draw(screen);
         requestAnimationFrame(tick);
-        lastTick = now;
       };
 
       tick();
