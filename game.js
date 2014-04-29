@@ -28,16 +28,18 @@
         this.entities[i].update();
       }
 
+      var dead = [];
       for (var i = 0; i < this.entities.length; i++) {
         for (var j = i + 1; j < this.entities.length; j++) {
           var p = pairs(pointsToLines(this.entities[i].points),
                         pointsToLines(this.entities[j].points));
           if (p.filter(function(x) { return trig.linesIntersecting(x[0], x[1]); }).length > 0) {
-            this.destroy(this.entities[i]);
-            this.destroy(this.entities[j]);
+            dead.push(this.entities[i], this.entities[j]);
           }
         }
       }
+
+      this.entities = this.entities.filter(function(x) { return dead.indexOf(x) === -1; });
     },
 
     draw: function(screen) {
@@ -51,13 +53,6 @@
       this.shootSound.load();
       this.shootSound.play();
       this.entities.push(createBullet(this, center, angle));
-    },
-
-    destroy: function(entity) {
-      var self = this;
-      setTimeout(function() {
-        self.entities.splice(self.entities.indexOf(entity), 1);
-      }, 0);
     }
   };
 
