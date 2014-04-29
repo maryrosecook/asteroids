@@ -105,7 +105,7 @@
 
         // jetting
         if (this.keyboarder.isDown(this.keyboarder.UP)) {
-          this.velocity = translate(his.velocity,
+          this.velocity = translate(this.velocity,
                                     rotate({ x: 0, y: -0.05 }, { x: 0, y: 0 }, this.angle));
         }
 
@@ -116,6 +116,8 @@
           this.lastShotTime = now;
           game.shoot({ x: this.points[1].x, y: this.points[1].y }, this.angle);
         }
+
+        this.move();
       },
 
       turn: function(angleDelta) {
@@ -124,6 +126,7 @@
         this.angle += angleDelta;
       },
 
+      move: move,
       draw: draw
     };
   };
