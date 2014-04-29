@@ -4,8 +4,8 @@
     var screen = canvas.getContext('2d');
     this.size = { x: canvas.width, y: canvas.height };
 
-    this.entities = [createAsteroid(this), createAsteroid(this), createAsteroid(this),
-                     createPlayer(this)];
+    this.entities = [createAsteroid(this.size), createAsteroid(this.size), createAsteroid(this.size),
+                     createPlayer(this, this.size)];
 
     var self = this;
     loadSound("/shoot.wav", function(shootSound) {
@@ -61,8 +61,8 @@
     }
   };
 
-  var createAsteroid = function(game) {
-    var center = { x: game.size.x * Math.random(), y: game.size.y * Math.random() };
+  var createAsteroid = function(size) {
+    var center = { x: size.x * Math.random(), y: size.y * Math.random() };
     return {
       angle: 0,
       center: center,
@@ -83,8 +83,8 @@
     this.points = this.points.map(function(x) { return translate(x, self.velocity); });
   };
 
-  var createPlayer = function(game) {
-    var center = { x: game.size.x / 2, y: game.size.y / 2 };
+  var createPlayer = function(game, size) {
+    var center = { x: size.x / 2, y: size.y / 2 };
     return {
       angle: 0,
       center: center,
