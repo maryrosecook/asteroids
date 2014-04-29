@@ -2,17 +2,17 @@
   var Game = function(canvasId) {
     var canvas = document.getElementById(canvasId);
     var screen = canvas.getContext('2d');
-    this.size = { x: canvas.width, y: canvas.height };
+    var size = { x: canvas.width, y: canvas.height };
 
-    this.entities = [createAsteroid(this.size), createAsteroid(this.size), createAsteroid(this.size),
-                     createPlayer(this, this.size)];
+    this.entities = [createAsteroid(size), createAsteroid(size), createAsteroid(size),
+                     createPlayer(this, size)];
 
     var self = this;
     loadSound("/shoot.wav", function(shootSound) {
       self.shootSound = shootSound;
       var tick = function() {
         self.update();
-        self.draw(screen);
+        self.draw(screen, size);
         requestAnimationFrame(tick);
       };
 
@@ -40,8 +40,8 @@
       this.entities = this.entities.filter(function(x) { return dead.indexOf(x) === -1; });
     },
 
-    draw: function(screen) {
-      screen.clearRect(0, 0, this.size.x, this.size.y);
+    draw: function(screen, size) {
+      screen.clearRect(0, 0, size.x, size.y);
       for (var i = 0; i < this.entities.length; i++) {
         this.entities[i].draw(screen);
       }
