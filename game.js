@@ -106,8 +106,7 @@
       if (this.keyboarder.isDown(this.keyboarder.SPACE) &&
           now - this.lastShotTime > 500) {
         this.lastShotTime = now;
-        var point = rotate(translate(this.center, { x: 0, y: -9 }), this.center, this.angle);
-        this.game.shoot(point, this.angle);
+        this.game.shoot({ x: this.points[1].x, y: this.points[1].y }, this.angle);
       }
 
       this.move();
