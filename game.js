@@ -4,10 +4,10 @@
     var screen = canvas.getContext('2d');
     var size = { x: canvas.width, y: canvas.height };
 
-    this.entities = [createAsteroid(size, { x: 75, y: 75 }),
-                     createAsteroid(size, { x: 225, y: 75 }),
-                     createAsteroid(size, { x: 150, y: 225 }),
-                     createPlayer(this, size)];
+    this.entities = [new Asteroid(size, { x: 75, y: 75 }),
+                     new Asteroid(size, { x: 225, y: 75 }),
+                     new Asteroid(size, { x: 150, y: 225 }),
+                     new Player(this, size)];
 
     var self = this;
     loadSound("/shoot.wav", function(shootSound) {
@@ -52,89 +52,100 @@
     shoot: function(center, angle) {
       this.shootSound.load();
       this.shootSound.play();
-      this.entities.push(createBullet(this, center, angle));
+      this.entities.push(new Bullet(this, center, angle));
     }
   };
 
-  var createAsteroid = function(size, center) {
-    return {
-      angle: 0,
-      center: center,
-      points: asteroidPoints(center, 30, 10),
-      velocity: { x: Math.random() - 0.5, y: Math.random() - 0.5 },
-      update: move,
-      draw: draw
-    };
+  var Asteroid = function(size, center) {
+    this.angle = 0;
+    this.center = center;
+    this.points = asteroidPoints(center, 30, 10);
+    this.velocity = { x: Math.random() - 0.5, y: Math.random() - 0.5 };
   };
 
-  var draw = function(screen) {
-    var lines = pointsToLines(this.points);
+  Asteroid.prototype = {
+    update: function() {
+      move(this);
+    },
+
+    draw: function(screen) {
+      drawLinesFromPoints(screen, this.points);
+    }
+  };
+
+  var drawLinesFromPoints = function(screen, points) {
+    var lines = pointsToLines(points);
     for (var i = 0; i < lines.length; i++) {
       drawLine(screen, lines[i]);
     }
   };
 
-  var move = function() {
-    var self = this;
-    this.center = trig.translate(this.center, this.velocity);
-    this.points = this.points.map(function(x) { return trig.translate(x, self.velocity); });
+  var move = function(body) {
+    body.center = trig.translate(body.center, body.velocity);
+    body.points = body.points.map(function(x) { return trig.translate(x, body.velocity); });
   };
 
-  var createPlayer = function(game, size) {
-    var center = { x: size.x / 2, y: size.y / 2 };
-    return {
-      angle: 0,
-      center: center,
-      points: [{ x: center.x - 8, y: center.y + 9 },
-               { x: center.x,     y: center.y - 10 },
-               { x: center.x + 8, y: center.y + 9 }],
-      velocity: { x: 0, y: 0 },
-      keyboarder: new Keyboarder(),
-      lastShotTime: 0,
-
-      update: function() {
-        if (this.keyboarder.isDown(this.keyboarder.KEYS.LEFT)) {
-          this.turn(-0.1);
-        } else if (this.keyboarder.isDown(this.keyboarder.KEYS.RIGHT)) {
-          this.turn(0.1);
-        }
-
-        if (this.keyboarder.isDown(this.keyboarder.KEYS.UP)) {
-          this.velocity = trig.translate(this.velocity,
-                                    trig.rotate({ x: 0, y: -0.05 }, { x: 0, y: 0 }, this.angle));
-        }
-
-        var now = new Date().getTime();
-        if (this.keyboarder.isDown(this.keyboarder.KEYS.SPACE) &&
-            now - this.lastShotTime > 500) {
-          this.lastShotTime = now;
-          game.shoot({ x: this.points[1].x, y: this.points[1].y }, this.angle);
-        }
-
-        this.move();
-      },
-
-      turn: function(angleDelta) {
-        var center = this.center;
-        this.points = this.points.map(function(x) { return trig.rotate(x, center, angleDelta); })
-        this.angle += angleDelta;
-      },
-
-      move: move,
-      draw: draw
-    };
+  var Player = function(game, size) {
+    this.game = game;
+    this.angle = 0;
+    this.center = { x: size.x / 2, y: size.y / 2 };
+    this.points = [{ x: this.center.x - 8, y: this.center.y + 9 },
+                   { x: this.center.x,     y: this.center.y - 10 },
+                   { x: this.center.x + 8, y: this.center.y + 9 }];
+    this.velocity = { x: 0, y: 0 };
+    this.keyboarder = new Keyboarder();
+    this.lastShotTime = 0;
   };
 
-  var createBullet = function(game, start, angle) {
-    var velocity = trig.rotate({ x: 0, y: -5 }, { x: 0, y: 0 }, angle);
-    return {
-      angle: 0,
-      center: start,
-      points: [start, trig.translate(start, { x: velocity.x, y: velocity.y })],
-      velocity: velocity,
-      update: move,
-      draw: draw
-    };
+  Player.prototype = {
+    update: function() {
+      if (this.keyboarder.isDown(this.keyboarder.KEYS.LEFT)) {
+        this.turn(-0.1);
+      } else if (this.keyboarder.isDown(this.keyboarder.KEYS.RIGHT)) {
+        this.turn(0.1);
+      }
+
+      if (this.keyboarder.isDown(this.keyboarder.KEYS.UP)) {
+        this.velocity = trig.translate(this.velocity,
+                                       trig.rotate({ x: 0, y: -0.05 }, { x: 0, y: 0 }, this.angle));
+      }
+
+      var now = new Date().getTime();
+      if (this.keyboarder.isDown(this.keyboarder.KEYS.SPACE) &&
+          now - this.lastShotTime > 500) {
+        this.lastShotTime = now;
+        this.game.shoot({ x: this.points[1].x, y: this.points[1].y }, this.angle);
+      }
+
+      move(this);
+    },
+
+    turn: function(angleDelta) {
+      var center = this.center;
+      this.points = this.points.map(function(x) { return trig.rotate(x, center, angleDelta); })
+      this.angle += angleDelta;
+    },
+
+    draw: function(screen) {
+      drawLinesFromPoints(screen, this.points);
+    }
+  };
+
+  var Bullet = function(game, start, angle) {
+    this.velocity = trig.rotate({ x: 0, y: -5 }, { x: 0, y: 0 }, angle);
+    this.angle = 0;
+    this.center = start;
+    this.points = [start, trig.translate(start, { x: this.velocity.x, y: this.velocity.y })];
+  };
+
+  Bullet.prototype = {
+    update: function() {
+      move(this);
+    },
+
+    draw: function(screen) {
+      drawLinesFromPoints(screen, this.points);
+    }
   };
 
   var Keyboarder = function() {
