@@ -28,18 +28,10 @@
         this.bodies[i].update();
       }
 
-      var dead = [];
-      for (var i = 0; i < this.bodies.length; i++) {
-        for (var j = i + 1; j < this.bodies.length; j++) {
-          var p = pairs(pointsToLines(this.bodies[i].points),
-                        pointsToLines(this.bodies[j].points));
-          if (p.filter(function(x) { return trig.linesIntersecting(x[0], x[1]); }).length > 0) {
-            dead.push(this.bodies[i], this.bodies[j]);
-          }
-        }
-      }
-
-      this.bodies = this.bodies.filter(function(x) { return dead.indexOf(x) === -1; });
+      var bodies = this.bodies;
+      this.bodies = this.bodies.filter(function(b1) {
+        return bodies.filter(function(b2) { return colliding(b1, b2); }).length === 0;
+      });
     },
 
     draw: function(screen, gameSize) {
@@ -206,6 +198,14 @@
       }
     }
     return pairs;
+  };
+
+  var colliding = function(b1, b2) {
+    if (b1 === b2) return false;
+    return pairs(pointsToLines(b1.points), pointsToLines(b2.points))
+      .filter(function(x) {
+        return trig.linesIntersecting(x[0], x[1]);
+      }).length > 0;
   };
 
   var loadSound = function(url, callback) {
