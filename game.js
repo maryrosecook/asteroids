@@ -179,8 +179,8 @@
     for (var a = 0; a < 2 * Math.PI; a += 2 * Math.PI / pointCount) {
       var random = Math.random();
       points.push(trig.rotate({
-        x: center.x + radius * (0.1 + random),
-        y: center.y - radius * (0.1 + random)
+        x: center.x + radius * (0.2 + random),
+        y: center.y - radius * (0.2 + random)
       }, center, a));
     }
 
