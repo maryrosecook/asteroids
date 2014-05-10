@@ -52,7 +52,7 @@
     shoot: function(center, angle) {
       this.shootSound.load();
       this.shootSound.play();
-      this.entities.push(new Bullet(this, center, angle));
+      this.entities.push(new Bullet(center, angle));
     }
   };
 
@@ -131,7 +131,7 @@
     }
   };
 
-  var Bullet = function(game, start, angle) {
+  var Bullet = function(start, angle) {
     this.velocity = trig.rotate({ x: 0, y: -5 }, { x: 0, y: 0 }, angle);
     this.angle = 0;
     this.center = start;
