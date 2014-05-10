@@ -2,19 +2,19 @@
   var Game = function(canvasId) {
     var canvas = document.getElementById(canvasId);
     var screen = canvas.getContext('2d');
-    var size = { x: canvas.width, y: canvas.height };
+    var gameSize = { x: canvas.width, y: canvas.height };
 
-    this.entities = [new Asteroid(size, { x: 75, y: 75 }),
-                     new Asteroid(size, { x: 225, y: 75 }),
-                     new Asteroid(size, { x: 150, y: 225 }),
-                     new Player(this, size)];
+    this.entities = [new Asteroid(gameSize, { x: 75, y: 75 }),
+                     new Asteroid(gameSize, { x: 225, y: 75 }),
+                     new Asteroid(gameSize, { x: 150, y: 225 }),
+                     new Player(this, gameSize)];
 
     var self = this;
     loadSound("/shoot.wav", function(shootSound) {
       self.shootSound = shootSound;
       var tick = function() {
         self.update();
-        self.draw(screen, size);
+        self.draw(screen, gameSize);
         requestAnimationFrame(tick);
       };
 
@@ -42,8 +42,8 @@
       this.entities = this.entities.filter(function(x) { return dead.indexOf(x) === -1; });
     },
 
-    draw: function(screen, size) {
-      screen.clearRect(0, 0, size.x, size.y);
+    draw: function(screen, gameSize) {
+      screen.clearRect(0, 0, gameSize.x, gameSize.y);
       for (var i = 0; i < this.entities.length; i++) {
         this.entities[i].draw(screen);
       }
@@ -85,10 +85,10 @@
     body.points = body.points.map(function(x) { return trig.translate(x, body.velocity); });
   };
 
-  var Player = function(game, size) {
+  var Player = function(game, gameSize) {
     this.game = game;
     this.angle = 0;
-    this.center = { x: size.x / 2, y: size.y / 2 };
+    this.center = { x: gameSize.x / 2, y: gameSize.y / 2 };
     this.points = [{ x: this.center.x - 8, y: this.center.y + 9 },
                    { x: this.center.x,     y: this.center.y - 10 },
                    { x: this.center.x + 8, y: this.center.y + 9 }];
