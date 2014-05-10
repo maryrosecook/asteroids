@@ -4,10 +4,10 @@
     var screen = canvas.getContext('2d');
     var gameSize = { x: canvas.width, y: canvas.height };
 
-    this.entities = [new Asteroid(gameSize, { x: 75, y: 75 }),
-                     new Asteroid(gameSize, { x: 225, y: 75 }),
-                     new Asteroid(gameSize, { x: 150, y: 225 }),
-                     new Player(this, gameSize)];
+    this.bodies = [new Asteroid(gameSize, { x: 75, y: 75 }),
+                   new Asteroid(gameSize, { x: 225, y: 75 }),
+                   new Asteroid(gameSize, { x: 150, y: 225 }),
+                   new Player(this, gameSize)];
 
     var self = this;
     loadSound("/shoot.wav", function(shootSound) {
@@ -24,35 +24,35 @@
 
   Game.prototype = {
     update: function() {
-      for (var i = 0; i < this.entities.length; i++) {
-        this.entities[i].update();
+      for (var i = 0; i < this.bodies.length; i++) {
+        this.bodies[i].update();
       }
 
       var dead = [];
-      for (var i = 0; i < this.entities.length; i++) {
-        for (var j = i + 1; j < this.entities.length; j++) {
-          var p = pairs(pointsToLines(this.entities[i].points),
-                        pointsToLines(this.entities[j].points));
+      for (var i = 0; i < this.bodies.length; i++) {
+        for (var j = i + 1; j < this.bodies.length; j++) {
+          var p = pairs(pointsToLines(this.bodies[i].points),
+                        pointsToLines(this.bodies[j].points));
           if (p.filter(function(x) { return trig.linesIntersecting(x[0], x[1]); }).length > 0) {
-            dead.push(this.entities[i], this.entities[j]);
+            dead.push(this.bodies[i], this.bodies[j]);
           }
         }
       }
 
-      this.entities = this.entities.filter(function(x) { return dead.indexOf(x) === -1; });
+      this.bodies = this.bodies.filter(function(x) { return dead.indexOf(x) === -1; });
     },
 
     draw: function(screen, gameSize) {
       screen.clearRect(0, 0, gameSize.x, gameSize.y);
-      for (var i = 0; i < this.entities.length; i++) {
-        this.entities[i].draw(screen);
+      for (var i = 0; i < this.bodies.length; i++) {
+        this.bodies[i].draw(screen);
       }
     },
 
     shoot: function(center, angle) {
       this.shootSound.load();
       this.shootSound.play();
-      this.entities.push(new Bullet(center, angle));
+      this.bodies.push(new Bullet(center, angle));
     }
   };
 
