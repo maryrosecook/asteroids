@@ -1,8 +1,7 @@
 ;(function() {
   var Game = function(canvasId) {
-    var canvas = document.getElementById(canvasId);
-    var screen = canvas.getContext('2d');
-    var gameSize = { x: canvas.width, y: canvas.height };
+    var screen = document.getElementById(canvasId).getContext('2d');
+    var gameSize = { x: screen.canvas.width, y: screen.canvas.height };
 
     this.bodies = [new Asteroid(gameSize, { x: 75, y: 75 }),
                    new Asteroid(gameSize, { x: 225, y: 75 }),
